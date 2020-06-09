@@ -313,10 +313,7 @@ class CloudObjectTranslators {
     return new CloudObjectTranslator<VarLongCoder>() {
       @Override
       public CloudObject toCloudObject(VarLongCoder target, SdkComponents sdkComponents) {
-        return addComponents(
-            CloudObject.forClassName(CloudObjectKinds.KIND_VARINT),
-            Collections.emptyList(),
-            sdkComponents);
+        return addComponents(CloudObject.forClass(target.getClass()), Collections.emptyList(), sdkComponents);
       }
 
       @Override
@@ -331,7 +328,7 @@ class CloudObjectTranslators {
 
       @Override
       public String cloudObjectClassName() {
-        return CloudObjectKinds.KIND_VARINT;
+        return CloudObject.forClass(VarLongCoder.class).getClassName();
       }
     };
   }

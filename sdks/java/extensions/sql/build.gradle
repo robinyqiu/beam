@@ -67,6 +67,7 @@ dependencies {
   compile "org.apache.calcite:calcite-core:$calcite_version"
   compile "org.apache.calcite:calcite-linq4j:$calcite_version"
   compile "org.apache.calcite.avatica:avatica-core:$avatica_version"
+  shadow project(path: ":beam-runners-google-cloud-dataflow-java", configuration: "shadow")
   shadow project(path: ":beam-sdks-java-core", configuration: "shadow")
   shadow project(path: ":beam-sdks-java-extensions-join-library", configuration: "shadow")
   shadow library.java.slf4j_api
@@ -181,4 +182,9 @@ task postCommit {
   group = "Verification"
   description = "Various integration tests"
   dependsOn integrationTest
+}
+
+task execute(type: JavaExec) {
+    main = "org.apache.beam.sdk.extensions.sql.TestPipeline"
+    classpath = sourceSets.main.runtimeClasspath
 }
