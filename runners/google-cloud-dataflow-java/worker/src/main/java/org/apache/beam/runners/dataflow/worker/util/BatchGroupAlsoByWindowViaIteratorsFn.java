@@ -66,7 +66,6 @@ class BatchGroupAlsoByWindowViaIteratorsFn<K, V, W extends BoundedWindow>
         && !strategy.getTimestampCombiner().dependsOnlyOnWindow()) {
       return false;
     }
-
     return true;
   }
 

@@ -17,6 +17,7 @@
  */
 package org.apache.beam.sdk.extensions.sql;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.bigquery.model.TableRow;
 import java.io.IOException;
 import org.apache.beam.runners.dataflow.DataflowRunner;
@@ -29,6 +30,7 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.schemas.Schema;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.util.common.ReflectHelpers;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.Row;
@@ -83,11 +85,13 @@ public class TestPipeline {
     return LookupTable;
   }
 
-  public static void main(String[] args) {
-    PipelineOptions options = PipelineOptionsFactory.create();
-    options.setRunner(DataflowRunner.class);
-    options.as(DataflowPipelineOptions.class).setProject("google.com:clouddfe");
-    options.as(DataflowPipelineOptions.class).setTempLocation("gs://robinyq/tmp");
+  private static final ObjectMapper MAPPER =
+      new ObjectMapper()
+          .registerModules(ObjectMapper.findModules(ReflectHelpers.findClassLoader()));
+
+  public static void main(String[] args) throws Exception {
+    String beamTestPipelineOptions = System.getProperty("beamTestPipelineOptions");
+    PipelineOptions options = PipelineOptionsFactory.fromArgs(MAPPER.readValue(beamTestPipelineOptions, String[].class)).as(PipelineOptions.class);
     Pipeline p = Pipeline.create(options);
 
     String header="LEARNINGPROVIDERID,NAME,UNITREF,UNITNAME,UNITLEVEL,EXAMDATE,DATECREATED,TESTTYPE,TOTALAMOUNT,DESCRIPTION,LEARNERID,LEARNERREF,GRADEID,GRADEDESCRIPTION,FIRSTNAME,MIDDLENAME,LASTNAME,DATEOFBIRTH,GENDER,LEGALSEXTYPE,REGREF,REGISTRATIONPRODUCTID,QUALIFICATIONID,REGISTPRODUCT,MIGRATIONCODE,PRODUCTNAME,ENTRYID,TESTTYPE_DF";

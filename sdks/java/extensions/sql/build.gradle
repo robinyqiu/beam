@@ -46,7 +46,7 @@ apply plugin: 'ca.coglinc.javacc'
 
 description = "Apache Beam :: SDKs :: Java :: Extensions :: SQL"
 ext.summary = "Beam SQL provides a new interface to generate a Beam pipeline from SQL statement"
-
+evaluationDependsOn(":beam-runners-google-cloud-dataflow-java-legacy-worker")
 configurations {
   // Create an fmppTask configuration representing the dependencies
   // required to define and execute the Ant FMPP task.
@@ -57,7 +57,7 @@ configurations {
 
 def calcite_version = "1.18.0"
 def avatica_version = "1.12.0"
-
+def dataflowLegacyWorkerJar = project(":beam-runners-google-cloud-dataflow-java-legacy-worker").shadowJar.archivePath
 dependencies {
   javacc "net.java.dev.javacc:javacc:4.0"
   fmppTask "com.googlecode.fmpp-maven-plugin:fmpp-maven-plugin:1.0"
@@ -187,4 +187,13 @@ task postCommit {
 task execute(type: JavaExec) {
     main = "org.apache.beam.sdk.extensions.sql.TestPipeline"
     classpath = sourceSets.main.runtimeClasspath
+  dependsOn ":beam-runners-google-cloud-dataflow-java-legacy-worker:shadowJar"
+
+  systemProperty "beamTestPipelineOptions", JsonOutput.toJson([
+          "--runner=DataflowRunner",
+          "--project=google.com:clouddfe",
+          "--tempLocation=gs://robinyq/tmp",
+          "--dataflowWorkerJar=${dataflowLegacyWorkerJar}",
+          "--workerHarnessContainerImage=",
+  ])
 }
