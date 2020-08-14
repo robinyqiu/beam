@@ -45,6 +45,7 @@ dependencies {
   fmppTask "com.googlecode.fmpp-maven-plugin:fmpp-maven-plugin:1.0"
   fmppTask "org.freemarker:freemarker:2.3.28"
   fmppTemplates library.java.vendored_calcite_1_20_0
+  compile project(":runners:google-cloud-dataflow-java")
   compile project(":sdks:java:core")
   compile project(":sdks:java:extensions:join-library")
   compile project(path: ":runners:direct-java", configuration: "shadow")
@@ -179,4 +180,9 @@ task postCommit {
   group = "Verification"
   description = "Various integration tests"
   dependsOn integrationTest
+}
+
+task execute(type: JavaExec) {
+  main = "org.apache.beam.sdk.extensions.sql.TestPipeline"
+  classpath = sourceSets.main.runtimeClasspath
 }
